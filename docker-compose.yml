@@ -1,0 +1,42 @@
+version: '3'
+services:
+  db:
+    container_name: db
+    image: mongo
+    volumes:
+      - ./data:/data/db
+    ports:
+      - "27017:27017"
+    
+  produits:
+    build: ./produit-service
+    container_name: produit-service
+    ports:
+      - "5000:4000"
+    volumes:
+      - /app/node_modules
+    depends_on:
+      - db
+
+  authentification:
+    build: ./auth-service
+    container_name: auth-service
+    ports:
+      - "5002:4002"
+    volumes:
+      - /app/node_modules
+    depends_on:
+      - db
+
+  commande:
+    build: ./commande-service
+    container_name: commande-service
+    ports:
+      - "5001:4001"
+    volumes:
+      - /app/node_modules
+    depends_on:
+      - authentification
+      - produits
+      - db
+    
